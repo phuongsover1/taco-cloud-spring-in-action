@@ -7,18 +7,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import tacos.domain.Ingredient;
 import tacos.domain.Ingredient.Type;
 import tacos.domain.Taco;
+import tacos.domain.TacoOrder;
 
 @Slf4j
 @Controller
 @RequestMapping("/design")
+@SessionAttributes("tacoOrder")
 public class DesignTacoController {
-  @GetMapping
-  public String showDesignForm(Model model) {
+  private static int i = 0;
+  @ModelAttribute
+  public void addIngredientsToModel(Model model) {
+    log.info("i: " + i++);
     List<Ingredient> ingredients =
         Arrays.asList(
             new Ingredient("FLTO", "Flour Tortilla", Type.WRAP),
@@ -36,21 +42,37 @@ public class DesignTacoController {
     for (Type type : types) {
       model.addAttribute(type.toString().toLowerCase(), filterByType(ingredients, type));
     }
-    model.addAttribute("design", new Taco());
+  }
+
+  @ModelAttribute(name = "tacoOrder")
+  public TacoOrder order() {
+    log.info("In model attribute: tacoOrder");
+    return new TacoOrder();
+  }
+
+  @ModelAttribute(name = "taco")
+  public Taco taco() {
+    log.info("In model attribute: taco");
+    return new Taco();
+  }
+
+  @GetMapping
+  public String showDesignForm() {
     return "design";
   }
 
   @PostMapping
-  public String processDesign(Taco design){
+  public String processDesign(Taco design, @ModelAttribute TacoOrder tacoOrder) {
     // Save the taco design
     // We'll do this in chapter 3
     log.info("Processing design: " + design);
+   tacoOrder.addTaco(design); 
     return "redirect:/orders/current";
   }
 
   private List<Ingredient> filterByType(List<Ingredient> ingredients, Type type) {
     return ingredients.stream()
-        .filter(it -> it.getType().name().equals(type.name()))
+        .filter(it -> it.getType().equals(type))
         .collect(Collectors.toList());
   }
 }

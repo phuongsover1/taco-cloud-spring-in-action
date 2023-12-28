@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import tacos.domain.Order;
+import tacos.domain.TacoOrder;
 
 @Slf4j
 @Controller
@@ -15,12 +15,12 @@ public class OrderController {
 
     @GetMapping("/current")
     public String orderForm(Model model) {
-        model.addAttribute("order", new Order());
+    model.addAttribute("order", new TacoOrder());
         return "orderForm";
     }
 
     @PostMapping
-    public String processOrder(Order order){
+    public String processOrder(TacoOrder order){
         log.info("Order submittted: " + order);
         return "redirect:/";
     }
