@@ -6,6 +6,7 @@ import java.util.List;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import tacos.IngredientRef;
 
 @Data
 public class Taco {
@@ -20,6 +21,10 @@ public class Taco {
 
   @NotNull(message = "You must choose at least 1 ingredient")
   @Size(min = 1, message = "You must choose at least 1 ingredient")
-  private List<Ingredient> ingredients;
+  private List<IngredientRef> ingredients;
+
+  public void addIngredient(Ingredient taco) {
+    this.ingredients.add(new IngredientRef(taco.getId()));
+  }
 
 }
